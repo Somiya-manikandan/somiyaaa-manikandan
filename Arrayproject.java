@@ -1,5 +1,5 @@
 import java.util.Scanner;
-import java.util.HashMap;
+import java.util.Arrays;
 
 // Pizza class to hold details about the pizza
 class Pizza {
@@ -8,7 +8,6 @@ class Pizza {
     private String flavor;
     private double price;
 
-    // Constructor to set pizza size, type, flavor, and price
     public Pizza(String size, String type, String flavor, double price) {
         this.size = size;
         this.type = type;
@@ -33,110 +32,166 @@ class Pizza {
     }
 
     public String toString() {
-        return "Pizza Size: " + size + ", Type: " + type + ", Flavor: " + flavor + ", Price: $" + price;
+        return "Pizza Size: " + size + ", Type: " + type + ", Flavor: " + flavor + ", Price: ₹" + price;
     }
 }
 
-// Order class to handle the current pizza order
+// Order class to manage multiple pizzas
 class Order {
-    private Pizza pizza;
+    private Pizza[] pizzas;
+    private int count;
 
-    // Method to set the pizza in the order
-    public void setPizza(Pizza pizza) {
-        this.pizza = pizza;
-        System.out.println("Pizza added to the order: " + pizza);
+    public Order(int size) {
+        pizzas = new Pizza[size];
+        count = 0;
     }
 
-    // Method to display the current pizza order
-    public void displayOrder() {
-        if (pizza != null) {
-            System.out.println("Current Order: " + pizza);
+    public void addPizza(Pizza pizza) {
+        if (count < pizzas.length) {
+            pizzas[count++] = pizza;
+            System.out.println("Pizza added to the order: " + pizza);
         } else {
-            System.out.println("No pizza in the order.");
+            System.out.println("Order is full! Cannot add more pizzas.");
         }
     }
 
-    // Method to calculate the total price
-    public void calculateTotal() {
-        if (pizza != null) {
-            System.out.println("Total Price: $" + pizza.getPrice());
+    public void displayOrder() {
+        if (count == 0) {
+            System.out.println("No pizzas in the order.");
         } else {
-            System.out.println("No pizza in the order to calculate the total.");
+            System.out.println("=== Current Order ===");
+            for (int i = 0; i < count; i++) {
+                System.out.println((i + 1) + ". " + pizzas[i]);
+            }
+        }
+    }
+
+    public void generateBill() {
+        if (count == 0) {
+            System.out.println("No pizzas in the order to generate a bill.");
+        } else {
+            double total = 0;
+            System.out.println("\n=== Final Bill ===");
+            for (int i = 0; i < count; i++) {
+                System.out.println((i + 1) + ". " + pizzas[i]);
+                total += pizzas[i].getPrice();
+            }
+            System.out.println("-------------------");
+            System.out.println("Total Price: ₹" + total);
+            System.out.println("Thank you for coming to our shop!");
         }
     }
 }
 
-// Main class to run the Pizza Hut management system
 public class PizzaHutManagementSystem {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Order order = new Order();
 
-        // HashMap to store flavors and their additional prices
-        HashMap<String, Double> flavorPriceMap = new HashMap<>();
-        flavorPriceMap.put("Paneer", 2.00);
-        flavorPriceMap.put("Pepperoni", 3.00);
-        flavorPriceMap.put("BBQ Chicken", 3.50);
-        flavorPriceMap.put("Veggie", 1.50);
+        System.out.println("====================================");
+        System.out.println("       Welcome to Our Pizza Shop!   ");
+        System.out.println("====================================");
+
+        Order order = new Order(10);
+
+        // List of valid flavors
+        String[] validFlavors = {
+            "Paneer", "Pepperoni", "BBQ Chicken", "Veggie", "Margherita", "Mushroom", 
+            "Chicken Tikka", "Hawaiian", "Sausage", "Spinach & Feta", "Four Cheese", 
+            "Jalapeno & Cheese", "Peri Peri Chicken", "Corn & Capsicum", "Pesto", 
+            "Alfredo", "Garlic & Herb", "Truffle", "Mediterranean", "Buffalo Chicken", 
+            "Sun-Dried Tomato & Basil", "Cheddar Delight", "Spicy Chipotle", "Smokey BBQ Veg"
+        };
 
         while (true) {
             System.out.println("\n=== Pizza Hut Management System ===");
             System.out.println("1. Place New Pizza Order");
             System.out.println("2. Display Current Order");
-            System.out.println("3. Calculate Total Price");
-            System.out.println("4. Exit");
+            System.out.println("3. Generate Final Bill and Exit");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
-            scanner.nextLine();  // Consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
-                    // Take pizza order details from the user
                     System.out.print("Enter Pizza Size (Small/Medium/Large): ");
                     String size = scanner.nextLine();
+                    if (!size.equalsIgnoreCase("Small") && 
+                        !size.equalsIgnoreCase("Medium") && 
+                        !size.equalsIgnoreCase("Large")) {
+                        System.out.println("Invalid size! Choose Small, Medium, or Large.");
+                        break;
+                    }
+
                     System.out.print("Enter Pizza Type (Veg/Non-Veg): ");
                     String type = scanner.nextLine();
-
-                    // Take flavor from the user
-                    System.out.print("Enter Pizza Flavor (Paneer/Pepperoni/BBQ Chicken/Veggie): ");
-                    String flavor = scanner.nextLine();
-                    double price;
-
-                    // Set base price based on size and type
-                    if (size.equalsIgnoreCase("Small")) {
-                        price = type.equalsIgnoreCase("Veg") ? 5.00 : 6.00;
-                    } else if (size.equalsIgnoreCase("Medium")) {
-                        price = type.equalsIgnoreCase("Veg") ? 7.00 : 8.00;
-                    } else {
-                        price = type.equalsIgnoreCase("Veg") ? 9.00 : 10.00;
+                    if (!type.equalsIgnoreCase("Veg") && !type.equalsIgnoreCase("Non-Veg")) {
+                        System.out.println("Invalid type! Choose Veg or Non-Veg.");
+                        break;
                     }
 
-                    // Add flavor price from the map
-                    if (flavorPriceMap.containsKey(flavor)) {
-                        price += flavorPriceMap.get(flavor);
-                    } else {
-                        System.out.println("Invalid flavor! Defaulting to Veggie.");
-                        price += flavorPriceMap.get("Veggie");
-                        flavor = "Veggie";
+                    System.out.println("Available Flavors:");
+                    for (int i = 0; i < validFlavors.length; i++) {
+                        System.out.println((i + 1) + ". " + validFlavors[i]);
                     }
 
+                    // Ask for flavor and validate
+                    String flavor = null;
+                    while (true) {
+                        System.out.print("Enter Pizza Flavor: ");
+                        flavor = scanner.nextLine();
+
+                        if (Arrays.asList(validFlavors).contains(flavor)) {
+                            break; // valid flavor, exit loop
+                        } else {
+                            System.out.println("Invalid flavor entered! Please choose a valid flavor.");
+                        }
+                    }
+
+                    double flavorPrice;
+                    switch (flavor) {
+                        case "Paneer": flavorPrice = 50; break;
+                        case "Pepperoni": flavorPrice = 70; break;
+                        case "BBQ Chicken": flavorPrice = 100; break;
+                        case "Veggie": flavorPrice = 30; break;
+                        case "Margherita": flavorPrice = 40; break;
+                        case "Mushroom": flavorPrice = 60; break;
+                        case "Chicken Tikka": flavorPrice = 90; break;
+                        case "Hawaiian": flavorPrice = 80; break;
+                        case "Sausage": flavorPrice = 70; break;
+                        case "Spinach & Feta": flavorPrice = 50; break;
+                        case "Four Cheese": flavorPrice = 90; break;
+                        case "Jalapeno & Cheese": flavorPrice = 60; break;
+                        case "Peri Peri Chicken": flavorPrice = 100; break;
+                        case "Corn & Capsicum": flavorPrice = 40; break;
+                        case "Pesto": flavorPrice = 50; break;
+                        case "Alfredo": flavorPrice = 60; break;
+                        case "Garlic & Herb": flavorPrice = 30; break;
+                        case "Truffle": flavorPrice = 120; break;
+                        case "Mediterranean": flavorPrice = 80; break;
+                        case "Buffalo Chicken": flavorPrice = 90; break;
+                        case "Sun-Dried Tomato & Basil": flavorPrice = 70; break;
+                        case "Cheddar Delight": flavorPrice = 60; break;
+                        case "Spicy Chipotle": flavorPrice = 100; break;
+                        case "Smokey BBQ Veg": flavorPrice = 50; break;
+                        default: 
+                            flavorPrice = 0;
+                    }
+
+                    double price = size.equalsIgnoreCase("Small") ? (type.equalsIgnoreCase("Veg") ? 200 : 250) :
+                                  size.equalsIgnoreCase("Medium") ? (type.equalsIgnoreCase("Veg") ? 300 : 350) :
+                                  (type.equalsIgnoreCase("Veg") ? 400 : 450);
+
+                    price += flavorPrice;
                     Pizza pizza = new Pizza(size, type, flavor, price);
-                    order.setPizza(pizza);
+                    order.addPizza(pizza);
                     break;
 
                 case 2:
-                    // Display the current pizza order
                     order.displayOrder();
                     break;
 
                 case 3:
-                    // Calculate the total price of the order
-                    order.calculateTotal();
-                    break;
-
-                case 4:
-                    // Exit the program
-                    System.out.println("Exiting the system...");
+                    order.generateBill();
                     scanner.close();
                     return;
 

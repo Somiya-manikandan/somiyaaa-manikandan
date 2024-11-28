@@ -78,7 +78,7 @@ class Order {
     }
 }
 
-public class PizzaHutManagementSystem {
+public class PizzaHut1  {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
